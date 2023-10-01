@@ -3,6 +3,7 @@ const {Restaurant, Menu} = require('./models/index')
 const {
     seedRestaurant,
     seedMenu,
+    seedItem
   } = require('./seedData');
 
 describe('Restaurant and Menu Models', () => {
@@ -17,27 +18,41 @@ describe('Restaurant and Menu Models', () => {
     });
 
     test('can create a Restaurant', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+        const restaurant = await Restaurant.create({
+            name: "McDonald's",
+            location: "Moscow",
+            cuisine: "American casual"
+        })
+        expect(restaurant.name).toEqual("McDonald's");
     });
 
     test('can create a Menu', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+        const menu = await Menu.create({title: 'Brunch'});
+        expect(menu.title).toEqual('Brunch');
     });
 
     test('can find Restaurants', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+        const restaurants = await Restaurant.findAll();
+        expect(restaurants.length).toEqual(1);
     });
 
     test('can find Menus', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+        const menus = await Menu.findAll();
+        expect(menus.length).toEqual(1);
     });
 
     test('can delete Restaurants', async () => {
-        // TODO - write test
-        expect('NO TEST').toEqual('EXPECTED DATA')
+        const restaurant = await Restaurant.findByPk(1);
+        const deletedRestaurant = await restaurant.destroy();
+        expect(deletedRestaurant.id).toEqual(1);
     });
+
+    test('a Restaurant has multiple Menus', async () => {
+        const applebees = await Restaurant.create(seedRestaurant[0]);
+        const menus = await Menu.bulkCreate(seedMenu);
+        await applebees.addMenu(menus[0]);
+        await applebees.addMenu(menus[1]);
+        const applebeesMenus = await applebees.getMenus();
+        expect(applebeesMenus.length).toBe(2);
+    })
 })
